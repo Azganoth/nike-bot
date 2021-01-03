@@ -14,7 +14,15 @@
     "start": "npm run build && node build",
     "dev": "nodemon --watch src --watch .env src/index.ts"
   },
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "inquirer": "^7.3.3",
+    "puppeteer": "^5.5.0",
+    "puppeteer-extra": "^3.1.15",
+    "puppeteer-extra-plugin-stealth": "^2.6.5"
+  },
   "devDependencies": {
+    "@types/inquirer": "^7",
     "@types/node": "^14",
     "nodemon": "^2.0.6",
     "prettier": "^2.2.1",
