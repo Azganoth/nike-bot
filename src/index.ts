@@ -202,6 +202,4 @@ const CHECKOUT_URL = 'https://www.nike.com.br/Checkout';
       await page.waitForTimeout(5000);
     }
   }
-
-  await page.screenshot({ path: '_.png' });
 })();
