@@ -18,11 +18,11 @@ const CHECKOUT_URL = 'https://www.nike.com.br/Checkout';
 
 // processo principal
 (async () => {
-  const { buy } = await inquirer.prompt<{ buy: boolean }>([
+  const { commit } = await inquirer.prompt<{ commit: boolean }>([
     {
       type: 'confirm',
-      name: 'buy',
-      message: 'Finalizar compra?',
+      name: 'commit',
+      message: 'Deseja finalizar a compra ao chegar no checkout?',
     },
   ]);
 
@@ -46,6 +46,7 @@ const CHECKOUT_URL = 'https://www.nike.com.br/Checkout';
     }
   });
 
+  // TODO: adicionar opções de tempo de `timeout` e `interval`
   // implementar "waitForClick"
   async function waitForClick(selector: string) {
     await page.waitForSelector(selector);
@@ -55,14 +56,20 @@ const CHECKOUT_URL = 'https://www.nike.com.br/Checkout';
   // ETAPA 0 - BOT
   while (true) {
     try {
+      if (page.isClosed()) {
+        console.log('A página foi fechada... terminando processo.');
+        process.exit(0);
+      }
+
       // carregar a página do tênis
       if (page.url() !== SHOE_URL) {
         await page.goto(SHOE_URL);
+      } else {
+        await page.reload();
       }
 
       if (await page.$('#errorModal')) {
-        await page.reload();
-        throw new Error('! Erro... tentando novamente.');
+        throw new Error('Erro por parte do site encontrado... tentando novamente.');
       }
 
       // ETAPA 1 - LOGIN
@@ -79,15 +86,19 @@ const CHECKOUT_URL = 'https://www.nike.com.br/Checkout';
         await page.waitForTimeout(200);
 
         await waitForClick('.loginSubmit > input');
-        await page.waitForNavigation();
+        try {
+          await page.waitForNavigation();
+        } catch {
+          throw new Error('Erro por parte do site encontrado... tentando novamente.');
+        }
 
         await page.waitForSelector('.logado.active');
       }
 
       // ETAPA 2 - TAMANHO DO TÊNIS
       console.log('> Escolhendo o tamanho do tênis');
-      const shoeSizesElements = await page.waitForSelector('.variacoes-tamanhos__lista');
-      const availableShoeSizes = await shoeSizesElements.$$eval('input', (elements) =>
+      const shoeSizesList = await page.waitForSelector('.variacoes-tamanhos__lista');
+      const availableShoeSizes = await shoeSizesList.$$eval('input', (elements) =>
         elements.map((element) => element.getAttribute('data-tamanho'))
       );
 
@@ -98,13 +109,13 @@ const CHECKOUT_URL = 'https://www.nike.com.br/Checkout';
 
       if (choosenShoeSize) {
         await waitForClick(`#tamanho__id${choosenShoeSize.replace(',', '')}`);
-        console.log(`>> O tamanho "${choosenShoeSize}" foi escolhido.`);
+        console.log(`>> O tamanho "${choosenShoeSize}" foi escolhido`);
       } else {
-        console.log('Nenhum tamanho de tênis preferível está disponível, terminando processo...');
+        console.log('Nenhum tamanho de tênis definido está disponível, terminando processo...');
         process.exit(0);
       }
 
-      // ETAPA 2.1 - SMS
+      // ETAPA 2.5 - SMS
       await page.waitForTimeout(1000); // wait for possible sms dialog to show
 
       if (await page.$('input[name="CelularCliente"]')) {
@@ -114,28 +125,29 @@ const CHECKOUT_URL = 'https://www.nike.com.br/Checkout';
 
         await waitForClick('.modal-footer--botao-vertical > button');
 
+        console.log('>> Aguardando código SMS');
         while (true) {
           const { smsCode } = await inquirer.prompt<{ smsCode: string }>([
             {
               name: 'smsCode',
-              message: 'Bota o código SMS ai:',
+              message: 'Digite o código SMS (6 dígitos):',
             },
           ]);
 
-          if (/^\d\d\d\d\d\d$/.test(smsCode)) {
+          if (/^\d{6}$/.test(smsCode)) {
             for (let index = 0; index < smsCode.length; index++) {
               await page.type(`input[name="Code${index + 1}"]`, smsCode.charAt(index));
-              await page.setDefaultTimeout(200);
+              await page.waitForTimeout(200);
             }
 
             await waitForClick('.modal-footer--botao-vertical > button[type="submit"]');
             break;
           } else {
-            console.log('! O código precisa ter 6 dígitos...');
+            console.log('~ O código deve conter 6 dígitos...');
           }
         }
       } else {
-        console.log('>> Não pediu código SMS.');
+        console.log('> Código SMS não foi requerido');
       }
 
       // ETAPA 3 - CARRINHO
@@ -145,13 +157,19 @@ const CHECKOUT_URL = 'https://www.nike.com.br/Checkout';
 
       // ETAPA 4 - CHECKOUT
       console.log('> Confirmando a compra');
+      let firstTry = false;
       while (true) {
         try {
           // carregar a página de checkout
           if (page.url() !== CHECKOUT_URL) {
             await page.goto(CHECKOUT_URL);
+          } else if (!firstTry) {
+            await page.reload();
           }
 
+          firstTry = true;
+
+          console.log('>> Confirmando endereço e entrega');
           await waitForClick('#seguir-pagamento');
 
           await page.waitForTimeout(1000); // wait for confirmation dialog to show
@@ -174,31 +192,31 @@ const CHECKOUT_URL = 'https://www.nike.com.br/Checkout';
             );
           }
 
-          console.log('>> Aceitando políticas de trocas');
+          console.log('>> Aceitando políticas de trocas e cancelamentos');
           await waitForClick('#politica-trocas');
 
           // ETAPA 5 - FINALIZAR COMPRA
-          if (buy) {
+          if (commit) {
             console.log('> Finalizando a compra');
             await waitForClick('#confirmar-pagamento');
 
             console.log('> Comprado!?!');
           } else {
-            console.log('> Compra não finalizada por decisão do usuário');
+            console.log('> Compra não finalizada (decisão do usuário)');
           }
 
-          await page.waitForTimeout(2000);
+          await page.waitForNavigation();
 
           break;
         } catch (error) {
-          console.error(error.message ?? error);
+          console.error(error.message ? `! ${error.message}` : error);
           await page.waitForTimeout(5000);
         }
       }
 
       break;
     } catch (error) {
-      console.error(error.message ?? error);
+      console.error(error.message ? `! ${error.message}` : error);
       await page.waitForTimeout(5000);
     }
   }
