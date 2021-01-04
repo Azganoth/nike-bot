@@ -1,6 +1,6 @@
 # nike-bot
 
-Compra um tênis na nike.
+Compra um tênis SNKRS na Nike Brasil.
 
 ## 🚀 Como usar
 
@@ -14,19 +14,7 @@ Instalar as dependências:
 npm install
 ```
 
-Caso não exista um arquivo chamado `.env` no diretório raíz, crie-o e certifique-se de que ele contêm a seguinte estrutura:
-
-```text
-EMAIL="email"
-PASSWORD="senha"
-PHONE="DD9XXXXXXXX"
-CARDS_LAST_DIGITS="0000"
-
-SHOE_URL="link"
-SHOE_SIZES=34,36.5,37,42
-```
-
-Executar o programa:
+Iniciar o programa:
 
 ```sh
 npm start
@@ -34,16 +22,24 @@ npm start
 
 ## 📜 Documentação
 
+Certifique-se de ajustar as configurações de acordo com suas necessidades no arquivo de configuração ".env" (caso não exista, inicie o bot para ele ser criado).
+
 ### Estrutura do arquivo de configuração
 
 ```text
-EMAIL="email"  # email da conta
-PASSWORD="senha"  # senha da conta
-PHONE="DD9XXXXXXXX"  # número de celular que receberá o código SMS, caso necessário
-CARDS_LAST_DIGITS="0000"  # os 4 últimos números do cartão
+# o email usado para entrar na sua conta
+EMAIL="nome.sobrenome@gmail.com"
+# a senha usada para entrar na sua conta
+PASSWORD="s3nh4"
+# o número de celular que receberá o código SMS, caso necessário
+PHONE=00911223344
+# os 4 últimos números do cartão salvo
+CARD_LAST_DIGITS=1234
 
-SHOE_URL="link"  # link da página do tênis
-SHOE_SIZES=34,36.5,37,42  # tamanhos preferíveis, deixe vazio para selecionar o primeiro tamanho disponível
+# link da página do tênis
+SHOE_URL="link"
+# tamanhos preferíveis, deixe vazio para selecionar o primeiro tamanho disponível
+SHOE_SIZES=34,36.5,37,42
 ```
 
 ## 🔑 Licença
