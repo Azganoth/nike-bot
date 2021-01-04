@@ -14,6 +14,12 @@ Instalar as dependências:
 npm install
 ```
 
+Compilar o programa:
+
+```sh
+npm run build
+```
+
 Iniciar o programa:
 
 ```sh
