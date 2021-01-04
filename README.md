@@ -20,6 +20,7 @@ Caso não exista um arquivo chamado `.env` no diretório raíz, crie-o e certifi
 EMAIL="email"
 PASSWORD="senha"
 PHONE="DD9XXXXXXXX"
+CARDS_LAST_DIGITS="0000"
 
 SHOE_URL="link"
 SHOE_SIZES=34,36.5,37,42
@@ -39,6 +40,7 @@ npm start
 EMAIL="email"  # email da conta
 PASSWORD="senha"  # senha da conta
 PHONE="DD9XXXXXXXX"  # número de celular que receberá o código SMS, caso necessário
+CARDS_LAST_DIGITS="0000"  # os 4 últimos números do cartão
 
 SHOE_URL="link"  # link da página do tênis
 SHOE_SIZES=34,36.5,37,42  # tamanhos preferíveis, deixe vazio para selecionar o primeiro tamanho disponível

@@ -12,7 +12,7 @@ import { clickSelector } from './helpers';
 puppeteer.use(StealthPlugin());
 
 // configurações
-const { EMAIL, PASSWORD, PHONE, SHOE_URL, SHOE_SIZES } = config;
+const { EMAIL, PASSWORD, PHONE, CARDS_LAST_DIGITS, SHOE_URL, SHOE_SIZES } = config;
 
 const CART_URL = 'https://www.nike.com.br/Carrinho';
 const CHECKOUT_URL = 'https://www.nike.com.br/Checkout';
@@ -159,7 +159,27 @@ const CHECKOUT_URL = 'https://www.nike.com.br/Checkout';
           await waitForClick('.modal-footer--botao-vertical > button:not([data-dismiss])');
 
           console.log('>> Selecionando o cartão');
-          await waitForClick('input[data-brand="Visa"]');
+          const savedCardsContainerElement = await page.waitForSelector(
+            '#cartoes-salvos > select-cta-options'
+          );
+          const cardsLastDigits = await savedCardsContainerElement.$$eval('input', (elements) =>
+            elements.map((element) => element.getAttribute('data-lastdigits'))
+          );
+
+          const choosenCardLastDigits =
+            CARDS_LAST_DIGITS.length > 0
+              ? CARDS_LAST_DIGITS.find((cardLastDigits) => cardsLastDigits.includes(cardLastDigits))
+              : cardsLastDigits.find(Boolean);
+
+          if (choosenCardLastDigits) {
+            await waitForClick(`input[data-lastdigits="${choosenCardLastDigits}"]`);
+            console.log(
+              `>> O cartão com os últimos dígitos "${choosenCardLastDigits}" foi escolhido.`
+            );
+          } else {
+            console.log('Nenhum cartão está disponível, terminando processo...');
+            process.exit(0);
+          }
 
           console.log('>> Aceitando políticas de trocas');
           await waitForClick('#politica-trocas');

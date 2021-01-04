@@ -1,4 +1,4 @@
-const { EMAIL, PASSWORD, PHONE, SHOE_URL, SHOE_SIZES } = process.env;
+const { EMAIL, PASSWORD, PHONE, CARDS_LAST_DIGITS, SHOE_URL, SHOE_SIZES } = process.env;
 
 // email
 if (EMAIL === undefined) {
@@ -20,6 +20,11 @@ if (PHONE.length !== 11) {
   );
 }
 
+// últimos números dos cartões
+if (CARDS_LAST_DIGITS === undefined) {
+  throw new Error('Defina os últimos números dos cartões no arquivo de configurações ".env".');
+}
+
 // URL da página do tênis
 if (SHOE_URL === undefined) {
   throw new Error('Defina a URL da página do tênis no arquivo de configurações ".env".');
@@ -34,6 +39,7 @@ export default {
   EMAIL,
   PASSWORD,
   PHONE,
+  CARDS_LAST_DIGITS: CARDS_LAST_DIGITS.split(',').filter(Boolean),
   SHOE_URL: new URL(SHOE_URL, 'https://www.nike.com.br/').href,
   SHOE_SIZES: SHOE_SIZES.split(',')
     .map((shoeSize) => shoeSize.replace('.', ','))
