@@ -30,6 +30,8 @@ npm start
 
 Certifique-se de ajustar as configurações de acordo com suas necessidades no arquivo de configuração ".env" (caso não exista, inicie o bot para ele ser criado).
 
+Para utilizar o bot a conta deve ter, no mínimo, um endereço e cartão salvos.
+
 ### Estrutura do arquivo de configuração
 
 ```text
