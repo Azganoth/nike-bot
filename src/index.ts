@@ -2,10 +2,10 @@ import puppeteer from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import inquirer from 'inquirer';
 
-import type { Page } from 'puppeteer';
-
 import config from './config';
 import { clickSelector } from './helpers';
+
+import type { ClickSelectorOptions } from './helpers';
 
 // puppeteer plugins
 puppeteer.use(StealthPlugin());
@@ -36,6 +36,13 @@ const CHECKOUT_URL = 'https://www.nike.com.br/Checkout';
   page.setDefaultTimeout(5000);
   page.setDefaultNavigationTimeout(20000);
 
+  // implementar `page.click` com a possibilidade de clicar em elementos não visíveis
+  async function waitForClick(selector: string, options: Partial<ClickSelectorOptions> = {}) {
+    const { intervalTime = 200, timeoutTime = 5000 } = options;
+    await page.waitForSelector(selector, { timeout: timeoutTime });
+    await page.evaluate(clickSelector, selector, { intervalTime, timeoutTime });
+  }
+
   // bloquear página do carrinho
   page.setRequestInterception(true);
   page.on('request', (request) => {
@@ -45,13 +52,6 @@ const CHECKOUT_URL = 'https://www.nike.com.br/Checkout';
       request.continue();
     }
   });
-
-  // TODO: adicionar opções de tempo de `timeout` e `interval`
-  // implementar "waitForClick"
-  async function waitForClick(selector: string) {
-    await page.waitForSelector(selector);
-    await page.evaluate(clickSelector, selector);
-  }
 
   // ETAPA 0 - BOT
   while (true) {

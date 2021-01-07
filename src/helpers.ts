@@ -1,4 +1,11 @@
-export function clickSelector(selector: string) {
+export type ClickSelectorOptions = {
+  intervalTime: number;
+  timeoutTime: number;
+};
+
+export function clickSelector(selector: string, options: ClickSelectorOptions) {
+  const { intervalTime, timeoutTime } = options;
+
   const element = document.querySelector<HTMLElement>(selector);
 
   if (!element) {
@@ -6,19 +13,25 @@ export function clickSelector(selector: string) {
   }
 
   return new Promise<string>((resolve, reject) => {
+    let elapsedMS = 0;
+    const hasTimeout = timeoutTime > 0;
+
     const intervalId = setInterval(() => {
       // clicar no elemento, caso não esteja desativado
       if (!element.hasAttribute('disabled')) {
-        clearTimeout(timeoutId);
         clearInterval(intervalId);
         element.click();
         resolve(`clicked on "${selector}"`);
       }
-    }, 200);
 
-    const timeoutId = setTimeout(() => {
-      clearInterval(intervalId);
-      reject(`unable to click on "${selector}" because it is disabled`);
-    }, 5000);
+      if (hasTimeout) {
+        if (elapsedMS > timeoutTime) {
+          clearInterval(intervalId);
+          reject(`unable to click on "${selector}"`);
+        }
+
+        elapsedMS += intervalTime;
+      }
+    }, intervalTime);
   });
 }
