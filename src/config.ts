@@ -14,6 +14,9 @@ CARD_LAST_DIGITS=1234
 # Dados do tênis
 SHOE_URL="link"
 SHOE_SIZES=
+
+# Configurações adicionais
+TIMEOUT=20000
 `;
 
 const userConfigPath = path.resolve(__dirname, '../.env');
@@ -28,7 +31,15 @@ if (!fs.existsSync(userConfigPath)) {
 // carregar as configurações do usuário
 const userConfig = dotenv.parse(fs.readFileSync(userConfigPath));
 
-const { EMAIL, PASSWORD, PHONE, CARD_LAST_DIGITS, SHOE_URL, SHOE_SIZES } = userConfig;
+const {
+  EMAIL,
+  PASSWORD,
+  PHONE,
+  CARD_LAST_DIGITS,
+  SHOE_URL,
+  SHOE_SIZES,
+  TIMEOUT = '20000',
+} = userConfig;
 
 // verificar a definição das configurações
 if (!EMAIL) {
@@ -108,4 +119,5 @@ export default {
   SHOE_SIZES: SHOE_SIZES.split(',')
     .map((shoeSize) => shoeSize.replace('.', ','))
     .filter(Boolean),
+  TIMEOUT: Number.parseInt(TIMEOUT, 10),
 };

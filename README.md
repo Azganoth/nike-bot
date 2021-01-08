@@ -48,6 +48,9 @@ CARD_LAST_DIGITS=1234
 SHOE_URL="link"
 # tamanhos preferíveis, deixe vazio para selecionar o primeiro tamanho disponível
 SHOE_SIZES=34,36.5,37,42
+
+# tempo máximo para a execução de uma ação assíncrona (navegação, clique em um botão assíncrono)
+TIMEOUT=20000
 ```
 
 ## 🔑 Licença

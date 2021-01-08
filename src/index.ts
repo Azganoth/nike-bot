@@ -11,10 +11,12 @@ import type { ClickSelectorOptions } from './helpers';
 puppeteer.use(StealthPlugin());
 
 // configurações
-const { EMAIL, PASSWORD, PHONE, CARD_LAST_DIGITS, SHOE_URL, SHOE_SIZES } = config;
+const { EMAIL, PASSWORD, PHONE, CARD_LAST_DIGITS, SHOE_URL, SHOE_SIZES, TIMEOUT } = config;
 
-const CART_URL = 'https://www.nike.com.br/Carrinho';
-const CHECKOUT_URL = 'https://www.nike.com.br/Checkout';
+const cartURL = 'https://www.nike.com.br/Carrinho';
+const checkoutURL = 'https://www.nike.com.br/Checkout';
+
+const actionTimeout = 5000;
 
 // processo principal
 (async () => {
@@ -33,12 +35,12 @@ const CHECKOUT_URL = 'https://www.nike.com.br/Checkout';
   });
 
   const page = (await browser.pages())[0] ?? (await browser.newPage());
-  page.setDefaultTimeout(5000);
-  page.setDefaultNavigationTimeout(20000);
+  page.setDefaultTimeout(actionTimeout);
+  page.setDefaultNavigationTimeout(TIMEOUT);
 
   // implementar `page.click` com a possibilidade de clicar em elementos não visíveis
   async function waitForClick(selector: string, options: Partial<ClickSelectorOptions> = {}) {
-    const { intervalTime = 200, timeoutTime = 5000 } = options;
+    const { intervalTime = 200, timeoutTime = actionTimeout } = options;
     await page.waitForSelector(selector, { timeout: timeoutTime });
     await page.evaluate(clickSelector, selector, { intervalTime, timeoutTime });
   }
@@ -46,7 +48,7 @@ const CHECKOUT_URL = 'https://www.nike.com.br/Checkout';
   // bloquear página do carrinho
   page.setRequestInterception(true);
   page.on('request', (request) => {
-    if (request.url() === CART_URL) {
+    if (request.url() === cartURL) {
       request.abort();
     } else {
       request.continue();
@@ -161,8 +163,8 @@ const CHECKOUT_URL = 'https://www.nike.com.br/Checkout';
       while (true) {
         try {
           // carregar a página de checkout
-          if (page.url() !== CHECKOUT_URL) {
-            await page.goto(CHECKOUT_URL);
+          if (page.url() !== checkoutURL) {
+            await page.goto(checkoutURL);
           } else if (!firstTry) {
             await page.reload();
           }
@@ -170,7 +172,7 @@ const CHECKOUT_URL = 'https://www.nike.com.br/Checkout';
           firstTry = true;
 
           console.log('>> Confirmando endereço e entrega');
-          await waitForClick('#seguir-pagamento');
+          await waitForClick('#seguir-pagamento', { timeoutTime: TIMEOUT });
 
           await page.waitForTimeout(1000); // wait for confirmation dialog to show
           await waitForClick('.modal-footer--botao-vertical > button:not([data-dismiss])');
