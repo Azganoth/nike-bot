@@ -134,7 +134,7 @@ const actionTimeout = 5000;
       await page.waitForTimeout(1000); // wait for possible sms dialog to show
 
       if (await page.$('input[name="CelularCliente"]')) {
-        console.log('> Enviando código SMS');
+        console.log(`> Enviando código SMS para o número "${PHONE}"`);
         await page.type('input[name="CelularCliente"]', PHONE);
         await page.waitForTimeout(200);
 
