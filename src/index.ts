@@ -2,6 +2,8 @@ import puppeteer from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import inquirer from 'inquirer';
 
+import type { FrameBase } from 'puppeteer';
+
 import config from './config';
 import { clickSelector } from './helpers';
 
@@ -39,10 +41,13 @@ const actionTimeout = 5000;
   page.setDefaultNavigationTimeout(TIMEOUT);
 
   // implementar `page.click` com a possibilidade de clicar em elementos não visíveis
-  async function waitForClick(selector: string, options: Partial<ClickSelectorOptions> = {}) {
-    const { intervalTime = 200, timeoutTime = actionTimeout } = options;
-    await page.waitForSelector(selector, { timeout: timeoutTime });
-    await page.evaluate(clickSelector, selector, { intervalTime, timeoutTime });
+  async function waitForClick(
+    selector: string,
+    options: Partial<ClickSelectorOptions> & { frame?: FrameBase } = {}
+  ) {
+    const { intervalTime = 200, timeoutTime = actionTimeout, frame = page } = options;
+    await frame.waitForSelector(selector, { timeout: timeoutTime });
+    await frame.evaluate(clickSelector, selector, { intervalTime, timeoutTime });
   }
 
   // bloquear página do carrinho
