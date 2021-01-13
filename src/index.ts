@@ -82,17 +82,25 @@ const actionTimeout = 5000;
       // ETAPA 1 - LOGIN
       if (!(await page.$('.logado.active'))) {
         console.log(`> Entrando na conta "${EMAIL}"`);
-        await waitForClick('#anchor-acessar');
+        await waitForClick('#anchor-acessar-unite-oauth2');
 
         await page.waitForTimeout(1000); // wait for login dialog to show
 
-        await page.type('.emailAddress > input[name="emailAddress"]', EMAIL);
-        await page.waitForTimeout(200);
+        const loginPage = await page.waitForSelector('#nike-unite-oauth2-iframe');
+        const login = await loginPage.contentFrame();
 
-        await page.type('.password > input[name="password"]', PASSWORD);
-        await page.waitForTimeout(200);
+        if (login) {
+          await login.type('input[name="emailAddress"]', EMAIL);
+          await login.waitForTimeout(200);
 
-        await waitForClick('.loginSubmit > input');
+          await login.type('input[name="password"]', PASSWORD);
+          await login.waitForTimeout(200);
+
+          await waitForClick('.loginSubmit > input[value="ENTRAR"]', { frame: login });
+        } else {
+          throw new Error('Página de login não carregada... tentando novamente.');
+        }
+
         try {
           await page.waitForNavigation();
         } catch {
