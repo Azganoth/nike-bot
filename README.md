@@ -6,7 +6,7 @@ Compra um tênis SNKRS na Nike Brasil.
 
 **Requerimentos:**
 
-- NodeJS
+- [NodeJS (14+)](https://nodejs.org/)
 
 Instalar as dependências:
 
@@ -23,7 +23,7 @@ npm run build
 Iniciar o programa:
 
 ```sh
-npm start
+npm run start
 ```
 
 ## 📜 Documentação
@@ -32,25 +32,138 @@ Certifique-se de ajustar as configurações de acordo com suas necessidades no a
 
 Para utilizar o bot a conta deve ter, no mínimo, um endereço e cartão salvos.
 
-### Estrutura do arquivo de configuração
+### Arquivo de configuração
+
+#### Exemplo
 
 ```text
-# o email usado para entrar na sua conta
 EMAIL="nome.sobrenome@gmail.com"
-# a senha usada para entrar na sua conta
 PASSWORD="s3nh4"
-# o número de celular que receberá o código SMS, caso necessário
-PHONE=00911223344
-# os 4 últimos números do cartão salvo
-CARD_LAST_DIGITS=1234
+CARD_LAST_DIGITS=3253
 
-# link da página do tênis
-SHOE_URL="link"
-# tamanhos preferíveis, deixe vazio para selecionar o primeiro tamanho disponível
-SHOE_SIZES=34,36.5,37,42
+PHONE=4898037261
+SHOE_URL="https://www.nike.com.br/Snkrs/Produto/PG-5/153-169-211-303936"
+SHOE_SIZES=34,33.5,42,40
 
-# tempo máximo para a execução de uma ação assíncrona (navegação, clique em um botão assíncrono)
-TIMEOUT=20000
+SYNC_TIMEOUT=5000
+ASYNC_TIMEOUT=20000
+RETRY_TIMEOUT=5000
+```
+
+#### EMAIL
+
+O email da conta na Nike.
+
+##### Exemplos
+
+```text
+EMAIL=nome.sobrenome@gmail.com
+```
+
+#### PASSWORD
+
+A senha da conta na Nike.
+
+##### Exemplos
+
+```text
+EMAIL=s3nh4
+```
+
+#### CARD_LAST_DIGITS
+
+Os quatro últimos números do cartão salvo na conta. Deve conter 4 dígitos.
+
+##### Exemplos
+
+```text
+CARD_LAST_DIGITS=3253
+```
+
+Para selecionar o primeiro cartão salvo na conta:
+
+```text
+CARD_LAST_DIGITS=
+```
+
+##### PHONE
+
+O número de celular que irá receber o código SMS, caso necessário. Deve conter 11 dígitos.
+
+##### Exemplos
+
+```text
+PHONE=4898037261
+```
+
+#### SHOE_URL
+
+O link para a página do tênis.
+
+##### Exemplos
+
+```text
+SHOE_URL=https://www.nike.com.br/Snkrs/Produto/PG-5/153-169-211-303936
+```
+
+O domínio pode ser omitido:
+
+```text
+SHOE_URL=Snkrs/Produto/PG-5/153-169-211-303936
+```
+
+#### SHOE_SIZES
+
+Os tamanhos do tênis.
+
+##### Exemplos
+
+Para selecionar os tamanhos 34; 33,5; 42 e 40:
+
+```text
+SHOE_SIZES=34,33.5,42,40
+```
+
+Para selecionar os primeiro tamanho disponível:
+
+```text
+SHOE_SIZES=
+```
+
+#### SYNC_TIMEOUT
+
+O tempo máximo para a execução de uma ação síncrona (clique, digitação, seleção).
+
+##### Exemplos
+
+Para esperar no máximo 5 segundos:
+
+```text
+SYNC_TIMEOUT=5000
+```
+
+#### ASYNC_TIMEOUT
+
+O tempo máximo para a execução de uma ação assíncrona (navegação).
+
+##### Exemplos
+
+Para esperar no máximo 20 segundos:
+
+```text
+ASYNC_TIMEOUT=20000
+```
+
+#### RETRY_TIMEOUT
+
+O tempo de espera para tentar novamente após um erro.
+
+##### Exemplos
+
+Para esperar 5 segundos:
+
+```text
+RETRY_TIMEOUT=5000
 ```
 
 ## 🔑 Licença

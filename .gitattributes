@@ -1,5 +1,2 @@
 # Normalize line endings
 * text=auto eol=lf
-
-# Set language to JSON5
-.vscode/*.json linguist-language=JSON5

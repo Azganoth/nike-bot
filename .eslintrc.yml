@@ -1,0 +1,35 @@
+root: true
+
+plugins:
+  - import
+  - unicorn
+  - prettier
+
+extends:
+  - airbnb-typescript/base
+  - plugin:unicorn/recommended
+  - prettier
+  - prettier/@typescript-eslint
+  - prettier/unicorn
+
+env:
+  es2020: true
+  node: true
+  browser: true
+
+parser: '@typescript-eslint/parser'
+
+parserOptions:
+  ecmaVersion: 2020
+  project: tsconfig.json
+
+rules:
+  no-await-in-loop: off
+  no-console: off
+  unicorn/filename-case: off
+  unicorn/no-array-for-each: off
+  unicorn/no-null: off
+  unicorn/no-process-exit: off
+  unicorn/no-useless-undefined: off
+  '@typescript-eslint/no-unused-vars': warn
+  prettier/prettier: warn
